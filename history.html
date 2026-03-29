@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}MKMKoop | 历史{% endblock %}
+{% block content %}
+<section class="section-head">
+  <div>
+    <h2>历史记录</h2>
+    <p class="muted">最近 200 条操作记录。</p>
+  </div>
+</section>
+<section class="stack">
+  {% if items %}
+    {% for item in items %}
+      <article class="card history-item">
+        <div class="history-line"></div>
+        <div>
+          <h4>{{ item['action'] }}</h4>
+          <p>{{ item['detail'] }}</p>
+          <span class="muted small">{{ item['created_at'].replace('T', ' ')[:19] }}</span>
+        </div>
+      </article>
+    {% endfor %}
+  {% else %}
+    <div class="card empty">暂无历史记录。</div>
+  {% endif %}
+</section>
+{% endblock %}

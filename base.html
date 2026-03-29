@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MKMKoop{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="{{ url_for('home') }}">
+        <div class="brand-mark"></div>
+        <div>
+          <h1>MKMKoop</h1>
+          <p>辅助工作的网站</p>
+        </div>
+      </a>
+      <nav class="nav">
+        <a href="{{ url_for('home') }}">首页</a>
+        <a href="{{ url_for('tasks_page') }}">任务</a>
+        <a href="{{ url_for('history_page') }}">历史</a>
+        {% if current_user %}
+          <span class="user-chip">{{ current_user['username'] }}</span>
+          <form action="{{ url_for('logout') }}" method="post">
+            <button class="btn ghost" type="submit">退出</button>
+          </form>
+        {% else %}
+          <a class="btn ghost" href="{{ url_for('login') }}">登录</a>
+          <a class="btn primary" href="{{ url_for('register') }}">注册</a>
+        {% endif %}
+        <button id="themeToggle" class="btn ghost" type="button">切换模式</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap main-area">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

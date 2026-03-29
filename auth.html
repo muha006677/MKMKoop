@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}MKMKoop | {{ '登录' if mode == 'login' else '注册' }}{% endblock %}
+{% block content %}
+<section class="auth-shell">
+  <div class="card auth-card">
+    <span class="pill">{{ '登录' if mode == 'login' else '注册' }}</span>
+    <h2>{{ '欢迎回来' if mode == 'login' else '创建账户' }}</h2>
+    <p class="muted">{{ '登录后继续管理你的任务。' if mode == 'login' else '创建你的 MKMKoop 工作台账号。' }}</p>
+    <form method="post" class="form-stack">
+      <label class="field">
+        <span>用户名</span>
+        <input type="text" name="username" required>
+      </label>
+      <label class="field">
+        <span>密码</span>
+        <input type="password" name="password" required>
+      </label>
+      <button class="btn primary block" type="submit">{{ '登录' if mode == 'login' else '注册' }}</button>
+    </form>
+    <div class="switch-text">
+      {% if mode == 'login' %}
+        没有账号？<a href="{{ url_for('register') }}">去注册</a>
+      {% else %}
+        已有账号？<a href="{{ url_for('login') }}">去登录</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}MKMKoop | 任务{% endblock %}
+{% block content %}
+<section class="section-head">
+  <div>
+    <h2>任务中心</h2>
+    <p class="muted">创建任务、更新进度、按日期查看、按状态筛选。</p>
+  </div>
+</section>
+
+<section class="layout">
+  <div class="card">
+    <form method="get" class="toolbar">
+      <input type="text" name="q" value="{{ q }}" placeholder="搜索任务名或内容">
+      <select name="status">
+        <option value="all" {% if status == 'all' %}selected{% endif %}>全部</option>
+        <option value="pending" {% if status == 'pending' %}selected{% endif %}>未完成</option>
+        <option value="completed" {% if status == 'completed' %}selected{% endif %}>已完成</option>
+      </select>
+      <button class="btn ghost" type="submit">筛选</button>
+    </form>
+
+    <div class="stack">
+      {% if tasks %}
+        {% for task in tasks %}
+          <div class="card inset task-card" data-deadline="{{ task|deadline_iso }}">
+            <div class="task-head">
+              <div>
+                <h3>{{ task['title'] }}</h3>
+                <p class="muted">{{ task['content'] }}</p>
+              </div>
+              <span class="status {{ task|task_state }}">{{ task|task_state_label }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="pill">日期 {{ task['task_date'] }}</span>
+              <span class="pill">截止 {{ task['due_time'] }}</span>
+              <span class="pill countdown">倒计时计算中</span>
+            </div>
+            <div class="progress-box">
+              <div class="progress-top"><span class="muted">完成度</span><strong class="progress-value">{{ task['progress'] }}%</strong></div>
+              <div class="progress-bar"><div class="progress-fill" style="width: {{ task['progress'] }}%"></div></div>
+            </div>
+            <div class="task-actions">
+              <form method="post" action="{{ url_for('update_task', task_id=task['id']) }}" class="inline-form grow">
+                <input type="range" min="0" max="100" value="{{ task['progress'] }}" name="progress" class="range-input" oninput="this.closest('form').querySelector('.range-label').textContent=this.value+'%'">
+                <span class="range-label">{{ task['progress'] }}%</span>
+                <button class="btn ghost" type="submit">保存进度</button>
+              </form>
+              <form method="post" action="{{ url_for('update_task', task_id=task['id']) }}" class="inline-form">
+                <input type="hidden" name="progress" value="100">
+                <button class="btn primary" type="submit">标记完成</button>
+              </form>
+              <form method="post" action="{{ url_for('delete_task', task_id=task['id']) }}" class="inline-form">
+                <button class="btn danger" type="submit">删除</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="card empty">没有符合条件的任务。</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <aside class="card">
+    <h3>创建任务</h3>
+    <form method="post" action="{{ url_for('create_task') }}" class="form-stack">
+      <label class="field">
+        <span>任务名</span>
+        <input type="text" name="title" required>
+      </label>
+      <label class="field">
+        <span>任务内容</span>
+        <textarea name="content" rows="5" required></textarea>
+      </label>
+      <div class="grid-2">
+        <label class="field">
+          <span>具体日期</span>
+          <input type="date" name="task_date" required>
+        </label>
+        <label class="field">
+          <span>截止时间</span>
+          <input type="time" name="due_time" required>
+        </label>
+      </div>
+      <label class="field">
+        <span>初始进度（%）</span>
+        <input type="number" min="0" max="100" name="progress" value="0" required>
+      </label>
+      <button class="btn primary block" type="submit">创建任务</button>
+    </form>
+  </aside>
+</section>
+{% endblock %}

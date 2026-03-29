@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}MKMKoop | 首页{% endblock %}
+{% block content %}
+<section class="hero card">
+  <div>
+    <span class="pill">MKMKoop Online Workspace</span>
+    <h2>把任务、历史、进度和日程，装进一个持续运作的控制台</h2>
+    <p class="muted large">这是一个真正可运行的 Flask 网站版本，支持注册登录、任务创建、进度更新、历史记录、倒计时和双主题切换。部署到服务器后可以 24 小时在线运行。</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="{{ url_for('tasks_page') }}">进入任务中心</a>
+      {% if not current_user %}
+      <a class="btn ghost" href="{{ url_for('login') }}">登录</a>
+      <a class="btn ghost" href="{{ url_for('register') }}">注册</a>
+      {% endif %}
+      <a class="btn ghost" href="{{ url_for('history_page') }}">查看历史</a>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat card inset">
+      <span>未完成任务</span>
+      <strong>{{ stats.pending }}</strong>
+    </div>
+    <div class="stat card inset">
+      <span>平均进度</span>
+      <strong>{{ stats.avg }}%</strong>
+    </div>
+    <div class="stat card inset">
+      <span>已完成</span>
+      <strong>{{ stats.done }}</strong>
+    </div>
+    <div class="stat card inset">
+      <span>系统状态</span>
+      <strong class="online">ONLINE</strong>
+    </div>
+  </div>
+</section>
+
+<section class="grid-3 section-gap">
+  <article class="card feature">
+    <h3>登录 / 注册</h3>
+    <p>账户隔离保存数据，任务只属于当前登录用户。</p>
+  </article>
+  <article class="card feature">
+    <h3>任务面板</h3>
+    <p>创建任务、设定日期与截止时间、更新进度并自动计算状态。</p>
+  </article>
+  <article class="card feature">
+    <h3>历史记录</h3>
+    <p>创建、更新、完成、删除都会留下时间轨迹。</p>
+  </article>
+</section>
+
+<section class="section-gap">
+  <div class="section-head">
+    <div>
+      <h3>未完成任务</h3>
+      <p class="muted">首页直接查看当前待办。</p>
+    </div>
+    <a class="btn ghost" href="{{ url_for('tasks_page') }}">管理任务</a>
+  </div>
+  <div class="stack">
+    {% if current_user and tasks %}
+      {% for task in tasks %}
+        <div class="card task-card" data-deadline="{{ task|deadline_iso }}">
+          <div class="task-head">
+            <div>
+              <h4>{{ task['title'] }}</h4>
+              <p class="muted">{{ task['content'] }}</p>
+            </div>
+            <span class="status {{ task|task_state }}">{{ task|task_state_label }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="pill">日期 {{ task['task_date'] }}</span>
+            <span class="pill">截止 {{ task['due_time'] }}</span>
+            <span class="pill countdown">倒计时计算中</span>
+          </div>
+          <div class="progress-box">
+            <div class="progress-top"><span class="muted">完成度</span><strong>{{ task['progress'] }}%</strong></div>
+            <div class="progress-bar"><div class="progress-fill" style="width: {{ task['progress'] }}%"></div></div>
+          </div>
+        </div>
+      {% endfor %}
+    {% elif current_user %}
+      <div class="card empty">暂无未完成任务。</div>
+    {% else %}
+      <div class="card empty">请先登录后使用完整功能。</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
